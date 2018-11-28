@@ -34,34 +34,47 @@ class Bookshelf extends React.Component {
         return data.json();
       })
       .then(res => { 
-        console.log(res.items);  
         this.setState({ books: res.items }); 
       });
   }
 
   /**
-   * changeSortOption()
-   * Gets data from google books api
+   * changeSortOption(event)
+   * Switches to user's chosen sort option, i.e. title alphabetically, price, publication date
    */
   changeSortOption(event) {
     this.setState({
-      sortOption: event,
+      sortOption: event.target.value,
       books: this.state.books
-        .sort(this.customSort().bind(this))
+        .sort(this.customSort(false).bind(this))
     });
   }
 
-  changeSortOrder(event) {  // TODO: handle ascend vs descend
+  /**
+   * changeSortOrder(event)
+   * Swaps between ascending and descending order of books by chosen value
+   */  
+  changeSortOrder(event) {
     this.setState({
-      sortOrder: event,
+      sortOrder: event.target.value,
       books: this.state.books
-        .sort(this.customSort().bind(this))
+        .sort(this.customSort(true).bind(this))
     });
   }
 
-  customSort() {
+  customSort(orderChange) {
+    let sortOption;
+    let sortOrder;
+    if (orderChange) { // depending on which option was recently changed, use event or state
+      sortOption = this.state.sortOption;
+      sortOrder = event.target.value;
+    } else {
+      sortOption = event.target.value;
+      sortOrder = this.state.sortOrder;
+    }
+
     return function(a, b) { 
-      if (event.target.value === 'title') {
+      if (sortOption === 'title') {
         if (a.volumeInfo && a.volumeInfo.title) {
           a = a.volumeInfo.title;
         } else {
@@ -73,7 +86,7 @@ class Bookshelf extends React.Component {
         } else {
           b = null;
         }
-      } else if (event.target.value === 'retailPrice') {
+      } else if (sortOption === 'retailPrice') {
         if (a.saleInfo && a.saleInfo.retailPrice && a.saleInfo.retailPrice.amount) {
           a = a.saleInfo.retailPrice.amount;
         } else {
@@ -85,19 +98,18 @@ class Bookshelf extends React.Component {
         } else {
           b = null;
         }
-      } else if (event.target.value === 'publishedDate') { // TODO: Handle longer string date comparisons
+      } else if (sortOption === 'publishedDate') {
         if (a.volumeInfo && a.volumeInfo.publishedDate) {
-          a = Number(a.volumeInfo.publishedDate);
+          a = new Date(a.volumeInfo.publishedDate);
         } else {
           a = null;
         }
 
         if (b.volumeInfo && b.volumeInfo.publishedDate) {
-          b = Number(b.volumeInfo.publishedDate);
+          b = new Date(b.volumeInfo.publishedDate);
         } else {
           b = null;
         }
-        console.log('sorting by publish date', a, b);
       }
       
       if (a === null){
@@ -109,10 +121,10 @@ class Bookshelf extends React.Component {
       else if (a === b){
         return 0;
       }
-      else if (this.state.sortOrder === 'ascending') {
+      else if (sortOrder === 'ascending') {
         return a < b ? -1 : 1;
       }
-      else if (this.state.sortOrder === 'descending') {
+      else if (sortOrder === 'descending') {
         return a < b ? 1 : -1;
       }
     };

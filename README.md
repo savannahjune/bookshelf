@@ -16,4 +16,7 @@
 If you make changes, the app will rebuild and reload if there are no build issues.
 
 ##### Todo's:
-
+- Save sorted options after sort is complete in state for faster re-rendering
+- Fix repition between changeSortOption and changeSortOrder by requiring user to submit or rethinking approach
+- Render with first 40 books immediately - don't wait for all 200
+- Add flow!

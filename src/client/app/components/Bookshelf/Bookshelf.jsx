@@ -1,7 +1,5 @@
 import React from 'react';
 import styles from './Bookshelf.css';
-import { runInThisContext } from 'vm';
-// import Select from '@material-ui/core/Select';
 
 class Bookshelf extends React.Component {
 
@@ -182,10 +180,18 @@ class Bookshelf extends React.Component {
     };
   }
 
+  /**
+   * handleNumberChange(event)
+   * Runs whenever user increments or decrements requested number of books
+   */ 
   handleNumberChange(event) {
     this.setState({numberBooks: event.target.value});    
   }
 
+  /**
+   * handleNumberChange(event)
+   * Runs whenever user submits to request to view a new number of books
+   */ 
   handleNumberSubmit(event) {
     event.preventDefault();
     this.setState({
@@ -243,6 +249,8 @@ class Bookshelf extends React.Component {
                 <input className="show-top-input" 
                   type="number" 
                   name="numberOfBooksToShow" 
+                  min="1"
+                  max="200"
                   value={this.state.numberBooks}
                   onChange={this.handleNumberChange}/>
               </label>

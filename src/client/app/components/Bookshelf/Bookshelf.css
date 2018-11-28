@@ -31,8 +31,22 @@ select {
   text-transform: none;
 }
 
-.select {
+.sort-select {
   margin-right: 10;
+}
+
+.show-top-form {
+  margin-bottom: 0;
+}
+
+.show-top-label {
+  font-size: 16px;
+  font-weight: 100;
+  margin-right: 10px;
+}
+
+.show-top-input {
+  margin-right: 10px;
 }
 
 .bookshelf {

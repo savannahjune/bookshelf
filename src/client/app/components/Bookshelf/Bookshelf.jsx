@@ -8,9 +8,10 @@ class Bookshelf extends React.Component {
   constructor(props) {
     super(props);
 
-    // this.getBooks = this.getBooks.bind(this);
     this.changeSortOption = this.changeSortOption.bind(this);
     this.changeSortOrder = this.changeSortOrder.bind(this);
+    this.handleNumberChange = this.handleNumberChange.bind(this);
+    this.handleNumberSubmit = this.handleNumberSubmit.bind(this);
 
     this.state = {
       booksOrderedBySale: [],
@@ -50,7 +51,6 @@ class Bookshelf extends React.Component {
     }
 
     grabTop200Books().then((books) => {
-      console.log(books);
       this.setState({ 
         books: books.slice(0, this.state.numberBooks),
         booksOrderedBySale: books,
@@ -182,6 +182,17 @@ class Bookshelf extends React.Component {
     };
   }
 
+  handleNumberChange(event) {
+    this.setState({numberBooks: event.target.value});    
+  }
+
+  handleNumberSubmit(event) {
+    event.preventDefault();
+    this.setState({
+      books: this.state.booksOrderedBySale.slice(0, this.state.numberBooks)
+    });
+  }
+
   render() {
     if (!this.state.books.length > 0) {
       return (
@@ -191,7 +202,7 @@ class Bookshelf extends React.Component {
     const bookComponents = this.state.books.map((book, index) => {
       return (
         <div className="book" key={index}>
-          <div className="title">{book.volumeInfo.title}</div>
+          {book.volumeInfo.title && <div className="title">{book.volumeInfo.title}</div>}
           {book.volumeInfo.authors && <div className ="authors">{'By '}
             {book.volumeInfo.authors.map((author, index) => {
               return (
@@ -215,16 +226,28 @@ class Bookshelf extends React.Component {
       <div className="body">
         <div className="header">
           <div>Bookshelf</div>
-            <select className="select" defaultValue={this.state.sortOption} onChange={this.changeSortOption}>
+          <span className="show-top-label">Rank by: </span>
+            <select className="sort-select" defaultValue={this.state.sortOption} onChange={this.changeSortOption}>
               <option value='rank'>Sales Rank</option>
               <option value='title'>Title</option>
               <option value='retailPrice'>Price</option>
               <option value='publishedDate'>Date of Publication</option>
             </select>
-            <select className="select" defaultValue={this.state.sortOrder} onChange={this.changeSortOrder}>
+            <select className="sort-select" defaultValue={this.state.sortOrder} onChange={this.changeSortOrder}>
               <option value={'ascending'}>Ascending</option>
               <option value={'descending'}>Descending</option>
             </select>
+            <form className="show-top-form" onSubmit={this.handleNumberSubmit}>
+              <label className="show-top-label">
+                {`Show top:  `}  
+                <input className="show-top-input" 
+                  type="number" 
+                  name="numberOfBooksToShow" 
+                  value={this.state.numberBooks}
+                  onChange={this.handleNumberChange}/>
+              </label>
+              <input type="submit" value="Submit" />
+            </form>
         </div>
         <div className="bookshelf">{bookComponents}</div>
       </div>

@@ -32,52 +32,31 @@ class Bookshelf extends React.Component {
             return data.json();
           })
           .then(res => { 
-            console.log(res.items);
             resolve(res.items);
           });
       });
     }
 
-    async function grab200() {
-      // books = await getBooks(googleBooksURL + '&startIndex=' + 0);
-      // for (let i=0; i<200; i+40) {
-      //   books = await getBooks(googleBooksURL + '&startIndex=' + i);
-      // }
+    async function grabTop200Books() {
+      // TODO: Use loop to increment start index
       const books1 = await getBooks(googleBooksURL + '&startIndex=' + 0);
       const books2 = await getBooks(googleBooksURL + '&startIndex=' + 40);
       const books3 = await getBooks(googleBooksURL + '&startIndex=' + 80);
       const books4 = await getBooks(googleBooksURL + '&startIndex=' + 120); 
-      // const books5 = await getBooks(googleBooksURL + '&startIndex=' + 160);
+      const books5 = await getBooks(googleBooksURL + '&startIndex=' + 160);
 
-      books = books1.concat(books2, books3, books4);
-      console.log(books);
+      books = books1.concat(books2, books3, books4, books5);
       return books;
     }
 
-    grab200().then((books) => {
+    grabTop200Books().then((books) => {
       console.log(books);
       this.setState({ 
+        books: books.slice(0, this.state.numberBooks),
         booksOrderedBySale: books,
-        books: books,
       }); 
     })
 
-  }
-
-  /**
-   * getBooks()
-   * Gets data from google books api
-   */
-  getBooks(googleBooksURL) {
-    let books = new Promise(resolve => {
-      fetch(googleBooksURL)
-        .then(data => {
-          return data.json();
-        })
-        .then(res => { 
-          resolve(res.items);
-        });
-    });
   }
 
   /**
@@ -85,7 +64,7 @@ class Bookshelf extends React.Component {
    * Switches to user's chosen sort option, i.e. title alphabetically, price, publication date
    */
   changeSortOption(event) {
-    const booksToOrder = this.state.booksOrderedBySale.slice(this.state.numberBooks);
+    const booksToOrder = this.state.booksOrderedBySale.slice(0, this.state.numberBooks);
     if (event.target.value === 'rank') {
       let newBookOrder;
       if (this.state.sortOrder === 'ascending') {
@@ -110,7 +89,7 @@ class Bookshelf extends React.Component {
    * Swaps between ascending and descending order of books by chosen value
    */  
   changeSortOrder(event) {
-    const booksToOrder = this.state.booksOrderedBySale.slice(this.state.numberBooks);
+    const booksToOrder = this.state.booksOrderedBySale.slice(0, this.state.numberBooks);
     if (this.state.sortOption === 'rank') {
       let newBookOrder;
       if (event.target.value === 'ascending') {
@@ -130,6 +109,11 @@ class Bookshelf extends React.Component {
     }
   }
 
+  /**
+   * customSort(orderChange: string)
+   * Performs work of sorting by whatever choice user most recently made
+   * Deals with missing properties by setting comparison to null
+   */ 
   customSort(orderChange) {
     let sortOption;
     let sortOrder;
@@ -199,18 +183,23 @@ class Bookshelf extends React.Component {
   }
 
   render() {
-    const books = this.state.books.map((book, index) => {
+    if (!this.state.books.length > 0) {
+      return (
+        <div className="title">Fetching books...</div>
+      ); 
+    }
+    const bookComponents = this.state.books.map((book, index) => {
       return (
         <div className="book" key={index}>
           <div className="title">{book.volumeInfo.title}</div>
-          <div className ="authors">{'By '}
+          {book.volumeInfo.authors && <div className ="authors">{'By '}
             {book.volumeInfo.authors.map((author, index) => {
               return (
                 <span key={index}>
                   {author}{book.volumeInfo.authors.length - 1 !== index && ', '}
                 </span>);
             })}
-          </div>
+          </div>}
           <img className="cover" src={book.volumeInfo.imageLinks.smallThumbnail}/>
           {book.volumeInfo.subtitle && <div className="subtitle">'{book.volumeInfo.subtitle}'</div>}
           {book.saleInfo && book.saleInfo.retailPrice && 
@@ -237,7 +226,7 @@ class Bookshelf extends React.Component {
               <option value={'descending'}>Descending</option>
             </select>
         </div>
-        <div className="bookshelf">{books}</div>
+        <div className="bookshelf">{bookComponents}</div>
       </div>
     )
 

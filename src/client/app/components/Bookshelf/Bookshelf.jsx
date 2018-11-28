@@ -1,6 +1,6 @@
 import React from 'react';
 import styles from './Bookshelf.css';
-import Select from '@material-ui/core/Select';
+// import Select from '@material-ui/core/Select';
 
 class Bookshelf extends React.Component {
 
@@ -41,27 +41,33 @@ class Bookshelf extends React.Component {
 
 
   render() {
-    const books = this.state.books.map(book => {
+    const books = this.state.books.map((book, index) => {
       return (
-        <div key={book.id}>
-          <div>Title: {book.volumeInfo.title}</div>
-          <img src={book.volumeInfo.imageLinks.smallThumbnail}/>
-          <div>Subtitle: {book.volumeInfo.subtitle}</div>
-          <div>Authors:
-            {book.volumeInfo.authors.map(author => {
-              return (author);
+        <div className="book" key={index}>
+          <div className="title">{book.volumeInfo.title}</div>
+          <div className ="authors">{'By '}
+            {book.volumeInfo.authors.map((author, index) => {
+              return (
+                <span key={index}>
+                  {author}{book.volumeInfo.authors.length - 1 !== index && ', '}
+                </span>);
             })}
           </div>
-          {book.saleInfo && book.saleInfo.retailPrice && <div>Retail Price: {book.saleInfo.retailPrice.amount}</div>}
+          <img className="cover" src={book.volumeInfo.imageLinks.smallThumbnail}/>
+          {book.volumeInfo.subtitle && <div className="subtitle">'{book.volumeInfo.subtitle}'</div>}
+          {book.saleInfo && book.saleInfo.retailPrice && 
+            <div className="retailPrice">
+              Retail Price: {book.saleInfo.retailPrice.amount}
+            </div>
+          }
         </div>
       )
     });
 
     return (
-      <div>
+      <div className="body">
         <div className="header">
           <div className="title">Bookshelf</div>
-            {/* <Select></Select> */}
             <select defaultValue={this.state.sortOption}>
               <option value={'title'}>Title</option>
               <option value={'retailPrice'}>Price</option>
@@ -72,7 +78,7 @@ class Bookshelf extends React.Component {
               <option value={'descending'}>Descending</option>
             </select>
         </div>
-        <div>{books}</div>
+        <div className="bookshelf">{books}</div>
       </div>
     )
 

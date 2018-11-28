@@ -208,22 +208,24 @@ class Bookshelf extends React.Component {
     const bookComponents = this.state.books.map((book, index) => {
       return (
         <div className="book" key={index}>
-          {book.volumeInfo.title && <div className="title">{book.volumeInfo.title}</div>}
-          {book.volumeInfo.authors && <div className ="authors">{'By '}
-            {book.volumeInfo.authors.map((author, index) => {
-              return (
-                <span key={index}>
-                  {author}{book.volumeInfo.authors.length - 1 !== index && ', '}
-                </span>);
-            })}
-          </div>}
-          <img className="cover" src={book.volumeInfo.imageLinks.smallThumbnail}/>
-          {book.volumeInfo.subtitle && <div className="subtitle">'{book.volumeInfo.subtitle}'</div>}
-          {book.saleInfo && book.saleInfo.retailPrice && 
-            <div className="retailPrice">
-              Retail Price: ${book.saleInfo.retailPrice.amount}
-            </div>
-          }
+          <a href={book.saleInfo.buyLink}>
+            {book.volumeInfo.title && <div className="title">{book.volumeInfo.title}</div>}
+            {book.volumeInfo.authors && <div className ="authors">{'By '}
+              {book.volumeInfo.authors.map((author, index) => {
+                return (
+                  <span key={index}>
+                    {author}{book.volumeInfo.authors.length - 1 !== index && ', '}
+                  </span>);
+              })}
+            </div>}
+            <img className="cover" src={book.volumeInfo.imageLinks.smallThumbnail} />
+            {book.volumeInfo.subtitle && <div className="subtitle">'{book.volumeInfo.subtitle}'</div>}
+            {book.saleInfo && book.saleInfo.retailPrice && 
+              <div className="retailPrice">
+                Retail Price: ${book.saleInfo.retailPrice.amount}
+              </div>
+            }
+          </a>
         </div>
       )
     });

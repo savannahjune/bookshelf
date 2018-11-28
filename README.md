@@ -1,6 +1,6 @@
 # Bookshelf
 
-### Shows Top 40 Programming Books
+### Shows Top 40 Programming Books From Google Books API
 
 #### To use the app locally:
 

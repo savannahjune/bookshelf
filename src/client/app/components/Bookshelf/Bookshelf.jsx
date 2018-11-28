@@ -8,7 +8,7 @@ class Bookshelf extends React.Component {
   constructor(props) {
     super(props);
 
-    this.getBooks = this.getBooks.bind(this);
+    // this.getBooks = this.getBooks.bind(this);
     this.changeSortOption = this.changeSortOption.bind(this);
     this.changeSortOrder = this.changeSortOrder.bind(this);
 
@@ -17,30 +17,67 @@ class Bookshelf extends React.Component {
       books: [],
       sortOption: 'rank',
       sortOrder: 'ascending',
+      numberBooks: 40,
     };
   }
 
   componentDidMount() {
-    this.getBooks();
+    const googleBooksURL = 'https://www.googleapis.com/books/v1/volumes?q=software&maxResults=40';
+    let books;
+
+    function getBooks(googleBooksURL) {
+      return new Promise(resolve => {
+        fetch(googleBooksURL)
+          .then(data => {
+            return data.json();
+          })
+          .then(res => { 
+            console.log(res.items);
+            resolve(res.items);
+          });
+      });
+    }
+
+    async function grab200() {
+      // books = await getBooks(googleBooksURL + '&startIndex=' + 0);
+      // for (let i=0; i<200; i+40) {
+      //   books = await getBooks(googleBooksURL + '&startIndex=' + i);
+      // }
+      const books1 = await getBooks(googleBooksURL + '&startIndex=' + 0);
+      const books2 = await getBooks(googleBooksURL + '&startIndex=' + 40);
+      const books3 = await getBooks(googleBooksURL + '&startIndex=' + 80);
+      const books4 = await getBooks(googleBooksURL + '&startIndex=' + 120); 
+      // const books5 = await getBooks(googleBooksURL + '&startIndex=' + 160);
+
+      books = books1.concat(books2, books3, books4);
+      console.log(books);
+      return books;
+    }
+
+    grab200().then((books) => {
+      console.log(books);
+      this.setState({ 
+        booksOrderedBySale: books,
+        books: books,
+      }); 
+    })
+
   }
 
   /**
    * getBooks()
    * Gets data from google books api
    */
-  getBooks() {
-    const googleBooksURL = 'https://www.googleapis.com/books/v1/volumes?q=software&maxResults=40';
-    let books = fetch(googleBooksURL)
-      .then(data => {
-        return data.json();
-      })
-      .then(res => { 
-        console.log(res.items);  
-        this.setState({ 
-          booksOrderedBySale: res.items,
-          books: res.items,
-        }); 
-      });
+  getBooks(googleBooksURL) {
+    let books = new Promise(resolve => {
+      fetch(googleBooksURL)
+        .then(data => {
+          return data.json();
+        })
+        .then(res => { 
+          resolve(res.items);
+        });
+    });
   }
 
   /**
@@ -48,12 +85,13 @@ class Bookshelf extends React.Component {
    * Switches to user's chosen sort option, i.e. title alphabetically, price, publication date
    */
   changeSortOption(event) {
+    const booksToOrder = this.state.booksOrderedBySale.slice(this.state.numberBooks);
     if (event.target.value === 'rank') {
       let newBookOrder;
       if (this.state.sortOrder === 'ascending') {
-        newBookOrder = this.state.booksOrderedBySale;
+        newBookOrder = booksToOrder;
       } else {
-        newBookOrder = this.state.booksOrderedBySale.reverse();
+        newBookOrder = booksToOrder.reverse();
       }
       this.setState({
         books: newBookOrder,
@@ -61,7 +99,7 @@ class Bookshelf extends React.Component {
     } else {
       this.setState({
         sortOption: event.target.value,
-        books: this.state.books
+        books: booksToOrder
           .sort(this.customSort(false).bind(this))
       });
     }
@@ -72,12 +110,13 @@ class Bookshelf extends React.Component {
    * Swaps between ascending and descending order of books by chosen value
    */  
   changeSortOrder(event) {
+    const booksToOrder = this.state.booksOrderedBySale.slice(this.state.numberBooks);
     if (this.state.sortOption === 'rank') {
       let newBookOrder;
       if (event.target.value === 'ascending') {
-        newBookOrder = this.state.booksOrderedBySale;
+        newBookOrder = booksToOrder;
       } else {
-        newBookOrder = this.state.booksOrderedBySale.reverse();
+        newBookOrder = booksToOrder.reverse();
       }
       this.setState({
         books: newBookOrder,
@@ -85,7 +124,7 @@ class Bookshelf extends React.Component {
     } else {
       this.setState({
         sortOrder: event.target.value,
-        books: this.state.books
+        books: booksToOrder
           .sort(this.customSort(true).bind(this))
       });
     }

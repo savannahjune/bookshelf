@@ -1,0 +1,83 @@
+.header {
+  font-family: Roboto;
+  margin-left: 15px;
+  font-family: Roboto;
+  font-weight: 500;
+  font-style: normal;
+  font-size: 58px;
+  letter-spacing: 0em;
+  line-height: 1.1em;
+  text-transform: none;
+}
+
+.addButton {
+  width: 110px;
+  height: 40px;
+
+  margin-top: 20px;
+  padding-bottom: 20px;
+
+  cursor: pointer;
+  text-align: center;
+
+  color: #fff;
+  background-color: #000;
+  border-color: #000;
+
+  font-size: 15px;
+  font-family: Open Sans;
+  font-size: 14px;
+  font-weight: 600;
+  font-style: normal;
+  text-transform: uppercase;
+  letter-spacing: .12em;
+
+  -webkit-transition: background 0.5s;
+  transition: background 0.5s;
+}
+
+.addButton:hover {
+  background: #606160;
+}
+
+
+.node circle {
+  stroke:#ccc;
+  stroke-width: 2px;
+}
+
+.node text {
+  font: 14px;
+  font-family: Open Sans;
+}
+
+.tooltip {
+  font: 14px;
+  font-family: Open Sans;
+}
+
+.link {
+  fill: none;
+  stroke: #ccc;
+  stroke-width: 2px;
+}
+
+.kube-api {
+  fill: #1C110A;
+}
+
+.kube-controller {
+  fill: #A63D40;
+}
+
+.kube-scheduler {
+  fill: #E9B872;
+}
+
+.kube-node {
+  fill: #90A959;
+}
+
+.kube-pod {
+  fill: #6494AA;
+}

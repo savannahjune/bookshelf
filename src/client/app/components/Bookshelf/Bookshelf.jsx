@@ -22,7 +22,6 @@ class Bookshelf extends React.Component {
 
   componentDidMount() {
     const googleBooksURL = 'https://www.googleapis.com/books/v1/volumes?q=software&maxResults=40';
-    let books;
 
     function getBooks(googleBooksURL) {
       return new Promise(resolve => {
@@ -37,14 +36,12 @@ class Bookshelf extends React.Component {
     }
 
     async function grabTop200Books() {
-      // TODO: Use loop to increment start index
-      const books1 = await getBooks(googleBooksURL + '&startIndex=' + 0);
-      const books2 = await getBooks(googleBooksURL + '&startIndex=' + 40);
-      const books3 = await getBooks(googleBooksURL + '&startIndex=' + 80);
-      const books4 = await getBooks(googleBooksURL + '&startIndex=' + 120); 
-      const books5 = await getBooks(googleBooksURL + '&startIndex=' + 160);
+      let books = [];
+      let i;
+      for (i=0; i < 200; i+=40) {
+        books = books.concat(await getBooks(googleBooksURL + '&startIndex=' + i));
+      }
 
-      books = books1.concat(books2, books3, books4, books5);
       return books;
     }
 

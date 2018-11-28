@@ -225,7 +225,7 @@ class Bookshelf extends React.Component {
     return (
       <div className="body">
         <div className="header">
-          <div>Bookshelf</div>
+          <div>Top Programming Books</div>
           <span className="show-top-label">Rank by: </span>
             <select className="sort-select" defaultValue={this.state.sortOption} onChange={this.changeSortOption}>
               <option value='rank'>Sales Rank</option>
@@ -246,7 +246,7 @@ class Bookshelf extends React.Component {
                   value={this.state.numberBooks}
                   onChange={this.handleNumberChange}/>
               </label>
-              <input type="submit" value="Submit" />
+              <input className="show-top-submit" type="submit" value="Submit" />
             </form>
         </div>
         <div className="bookshelf">{bookComponents}</div>

@@ -6,7 +6,6 @@ select {
 
   -webkit-appearance: none;
   -moz-appearance: none;
-  appearance: none;
 
   background-image: url('data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAABAAAAAQCAYAAAAf8/9hAAAAh0lEQVQ4T93TMQrCUAzG8V9x8QziiYSuXdzFC7h4AcELOPQAdXYovZCHEATlgQV5GFTe1ozJlz/kS1IpjKqw3wQBVyy++JI0y1GTe7DCBbMAckeNIQKk/BanALBB+16LtnDELoMcsM/BESDlz2heDR3WePwKSLo5eoxz3z6NNcFD+vu3ij14Aqz/DxGbKB7CAAAAAElFTkSuQmCC');
   background-repeat: no-repeat;
@@ -45,8 +44,30 @@ select {
   margin-right: 10px;
 }
 
-.show-top-input {
-  margin-right: 10px;
+.show-top-input, .show-top-submit {
+  -webkit-appearance: none;
+  -moz-appearance: none;
+
+  height: 30px;
+  width: 75px;
+  border-radius: 5px;
+  border-color: rgb(166, 166, 166);
+  background-color: white;
+  border-width: 1px;
+  border-style: solid;
+  border-image: none;
+  padding: 5px;
+}
+
+.show-top-submit {
+  font-size: 16px;
+  font-weight: 100;
+}
+
+.show-top-submit:hover {
+  background-color: rgb(166, 166, 166);
+  color: white;
+  cursor: pointer;
 }
 
 .bookshelf {

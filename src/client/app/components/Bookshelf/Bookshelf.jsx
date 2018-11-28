@@ -13,8 +13,9 @@ class Bookshelf extends React.Component {
     this.changeSortOrder = this.changeSortOrder.bind(this);
 
     this.state = {
+      booksOrderedBySale: [],
       books: [],
-      sortOption: 'title',
+      sortOption: 'rank',
       sortOrder: 'ascending',
     };
   }
@@ -34,7 +35,11 @@ class Bookshelf extends React.Component {
         return data.json();
       })
       .then(res => { 
-        this.setState({ books: res.items }); 
+        console.log(res.items);  
+        this.setState({ 
+          booksOrderedBySale: res.items,
+          books: res.items,
+        }); 
       });
   }
 
@@ -43,11 +48,23 @@ class Bookshelf extends React.Component {
    * Switches to user's chosen sort option, i.e. title alphabetically, price, publication date
    */
   changeSortOption(event) {
-    this.setState({
-      sortOption: event.target.value,
-      books: this.state.books
-        .sort(this.customSort(false).bind(this))
-    });
+    if (event.target.value === 'rank') {
+      let newBookOrder;
+      if (this.state.sortOrder === 'ascending') {
+        newBookOrder = this.state.booksOrderedBySale;
+      } else {
+        newBookOrder = this.state.booksOrderedBySale.reverse();
+      }
+      this.setState({
+        books: newBookOrder,
+      });
+    } else {
+      this.setState({
+        sortOption: event.target.value,
+        books: this.state.books
+          .sort(this.customSort(false).bind(this))
+      });
+    }
   }
 
   /**
@@ -55,11 +72,23 @@ class Bookshelf extends React.Component {
    * Swaps between ascending and descending order of books by chosen value
    */  
   changeSortOrder(event) {
-    this.setState({
-      sortOrder: event.target.value,
-      books: this.state.books
-        .sort(this.customSort(true).bind(this))
-    });
+    if (this.state.sortOption === 'rank') {
+      let newBookOrder;
+      if (event.target.value === 'ascending') {
+        newBookOrder = this.state.booksOrderedBySale;
+      } else {
+        newBookOrder = this.state.booksOrderedBySale.reverse();
+      }
+      this.setState({
+        books: newBookOrder,
+      });
+    } else {
+      this.setState({
+        sortOrder: event.target.value,
+        books: this.state.books
+          .sort(this.customSort(true).bind(this))
+      });
+    }
   }
 
   customSort(orderChange) {
@@ -72,7 +101,7 @@ class Bookshelf extends React.Component {
       sortOption = event.target.value;
       sortOrder = this.state.sortOrder;
     }
-
+    
     return function(a, b) { 
       if (sortOption === 'title') {
         if (a.volumeInfo && a.volumeInfo.title) {
@@ -159,6 +188,7 @@ class Bookshelf extends React.Component {
         <div className="header">
           <div className="title">Bookshelf</div>
             <select className="select" defaultValue={this.state.sortOption} onChange={this.changeSortOption}>
+              <option value='rank'>Sales Rank</option>
               <option value='title'>Title</option>
               <option value='retailPrice'>Price</option>
               <option value='publishedDate'>Date of Publication</option>

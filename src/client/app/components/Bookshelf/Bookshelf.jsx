@@ -8,7 +8,7 @@ class Bookshelf extends React.Component {
   constructor(props) {
     super(props);
 
-    this.getBooks = this.getBooks.bind(this);
+    // this.getBooks = this.getBooks.bind(this);
     this.changeSortOption = this.changeSortOption.bind(this);
     this.changeSortOrder = this.changeSortOrder.bind(this);
 
@@ -17,30 +17,46 @@ class Bookshelf extends React.Component {
       books: [],
       sortOption: 'rank',
       sortOrder: 'ascending',
+      numberBooks: 40,
     };
   }
 
   componentDidMount() {
-    this.getBooks();
-  }
-
-  /**
-   * getBooks()
-   * Gets data from google books api
-   */
-  getBooks() {
     const googleBooksURL = 'https://www.googleapis.com/books/v1/volumes?q=software&maxResults=40';
-    let books = fetch(googleBooksURL)
-      .then(data => {
-        return data.json();
-      })
-      .then(res => { 
-        console.log(res.items);  
-        this.setState({ 
-          booksOrderedBySale: res.items,
-          books: res.items,
-        }); 
+    let books;
+
+    function getBooks(googleBooksURL) {
+      return new Promise(resolve => {
+        fetch(googleBooksURL)
+          .then(data => {
+            return data.json();
+          })
+          .then(res => { 
+            resolve(res.items);
+          });
       });
+    }
+
+    async function grabTop200Books() {
+      // TODO: Use loop to increment start index
+      const books1 = await getBooks(googleBooksURL + '&startIndex=' + 0);
+      const books2 = await getBooks(googleBooksURL + '&startIndex=' + 40);
+      const books3 = await getBooks(googleBooksURL + '&startIndex=' + 80);
+      const books4 = await getBooks(googleBooksURL + '&startIndex=' + 120); 
+      const books5 = await getBooks(googleBooksURL + '&startIndex=' + 160);
+
+      books = books1.concat(books2, books3, books4, books5);
+      return books;
+    }
+
+    grabTop200Books().then((books) => {
+      console.log(books);
+      this.setState({ 
+        books: books.slice(0, this.state.numberBooks),
+        booksOrderedBySale: books,
+      }); 
+    })
+
   }
 
   /**
@@ -48,12 +64,13 @@ class Bookshelf extends React.Component {
    * Switches to user's chosen sort option, i.e. title alphabetically, price, publication date
    */
   changeSortOption(event) {
+    const booksToOrder = this.state.booksOrderedBySale.slice(0, this.state.numberBooks);
     if (event.target.value === 'rank') {
       let newBookOrder;
       if (this.state.sortOrder === 'ascending') {
-        newBookOrder = this.state.booksOrderedBySale;
+        newBookOrder = booksToOrder;
       } else {
-        newBookOrder = this.state.booksOrderedBySale.reverse();
+        newBookOrder = booksToOrder.reverse();
       }
       this.setState({
         books: newBookOrder,
@@ -61,7 +78,7 @@ class Bookshelf extends React.Component {
     } else {
       this.setState({
         sortOption: event.target.value,
-        books: this.state.books
+        books: booksToOrder
           .sort(this.customSort(false).bind(this))
       });
     }
@@ -72,12 +89,13 @@ class Bookshelf extends React.Component {
    * Swaps between ascending and descending order of books by chosen value
    */  
   changeSortOrder(event) {
+    const booksToOrder = this.state.booksOrderedBySale.slice(0, this.state.numberBooks);
     if (this.state.sortOption === 'rank') {
       let newBookOrder;
       if (event.target.value === 'ascending') {
-        newBookOrder = this.state.booksOrderedBySale;
+        newBookOrder = booksToOrder;
       } else {
-        newBookOrder = this.state.booksOrderedBySale.reverse();
+        newBookOrder = booksToOrder.reverse();
       }
       this.setState({
         books: newBookOrder,
@@ -85,12 +103,17 @@ class Bookshelf extends React.Component {
     } else {
       this.setState({
         sortOrder: event.target.value,
-        books: this.state.books
+        books: booksToOrder
           .sort(this.customSort(true).bind(this))
       });
     }
   }
 
+  /**
+   * customSort(orderChange: string)
+   * Performs work of sorting by whatever choice user most recently made
+   * Deals with missing properties by setting comparison to null
+   */ 
   customSort(orderChange) {
     let sortOption;
     let sortOrder;
@@ -160,18 +183,23 @@ class Bookshelf extends React.Component {
   }
 
   render() {
-    const books = this.state.books.map((book, index) => {
+    if (!this.state.books.length > 0) {
+      return (
+        <div className="title">Fetching books...</div>
+      ); 
+    }
+    const bookComponents = this.state.books.map((book, index) => {
       return (
         <div className="book" key={index}>
           <div className="title">{book.volumeInfo.title}</div>
-          <div className ="authors">{'By '}
+          {book.volumeInfo.authors && <div className ="authors">{'By '}
             {book.volumeInfo.authors.map((author, index) => {
               return (
                 <span key={index}>
                   {author}{book.volumeInfo.authors.length - 1 !== index && ', '}
                 </span>);
             })}
-          </div>
+          </div>}
           <img className="cover" src={book.volumeInfo.imageLinks.smallThumbnail}/>
           {book.volumeInfo.subtitle && <div className="subtitle">'{book.volumeInfo.subtitle}'</div>}
           {book.saleInfo && book.saleInfo.retailPrice && 
@@ -198,7 +226,7 @@ class Bookshelf extends React.Component {
               <option value={'descending'}>Descending</option>
             </select>
         </div>
-        <div className="bookshelf">{books}</div>
+        <div className="bookshelf">{bookComponents}</div>
       </div>
     )
 

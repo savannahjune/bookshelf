@@ -214,7 +214,7 @@ class Bookshelf extends React.Component {
     return (
       <div className="body">
         <div className="header">
-          <div className="title">Bookshelf</div>
+          <div>Bookshelf</div>
             <select className="select" defaultValue={this.state.sortOption} onChange={this.changeSortOption}>
               <option value='rank'>Sales Rank</option>
               <option value='title'>Title</option>

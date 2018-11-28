@@ -1,3 +1,21 @@
+select {
+  height: 30px;
+  width: 150px;
+  border-radius: 5;
+  padding-left: 10px;
+
+  -webkit-appearance: none;
+  -moz-appearance: none;
+  appearance: none;
+
+  background-image: url('data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAABAAAAAQCAYAAAAf8/9hAAAAh0lEQVQ4T93TMQrCUAzG8V9x8QziiYSuXdzFC7h4AcELOPQAdXYovZCHEATlgQV5GFTe1ozJlz/kS1IpjKqw3wQBVyy++JI0y1GTe7DCBbMAckeNIQKk/BanALBB+16LtnDELoMcsM/BESDlz2heDR3WePwKSLo5eoxz3z6NNcFD+vu3ij14Aqz/DxGbKB7CAAAAAElFTkSuQmCC');
+  background-repeat: no-repeat;
+  background-position: 125px center;
+
+  font-family: Roboto;
+  font-size: 14px;
+}
+
 .body {
   margin-left: 15px;
 }
@@ -11,6 +29,10 @@
   letter-spacing: 0em;
   line-height: 1.1em;
   text-transform: none;
+}
+
+.select {
+  margin-right: 10;
 }
 
 .bookshelf {
@@ -34,6 +56,7 @@
 
 .title {
   font-weight: 400;
+  font-size: 18px;
   margin-bottom: 5;
 }
 

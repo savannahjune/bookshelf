@@ -1,5 +1,6 @@
 import React from 'react';
 import styles from './Bookshelf.css';
+import { runInThisContext } from 'vm';
 // import Select from '@material-ui/core/Select';
 
 class Bookshelf extends React.Component {
@@ -8,6 +9,8 @@ class Bookshelf extends React.Component {
     super(props);
 
     this.getBooks = this.getBooks.bind(this);
+    this.changeSortOption = this.changeSortOption.bind(this);
+    this.changeSortOrder = this.changeSortOrder.bind(this);
 
     this.state = {
       books: [],
@@ -36,9 +39,84 @@ class Bookshelf extends React.Component {
       });
   }
 
+  /**
+   * changeSortOption()
+   * Gets data from google books api
+   */
+  changeSortOption(event) {
+    this.setState({
+      sortOption: event,
+      books: this.state.books
+        .sort(this.customSort().bind(this))
+    });
+  }
 
+  changeSortOrder(event) {  // TODO: handle ascend vs descend
+    this.setState({
+      sortOrder: event,
+      books: this.state.books
+        .sort(this.customSort().bind(this))
+    });
+  }
 
+  customSort() {
+    return function(a, b) { 
+      if (event.target.value === 'title') {
+        if (a.volumeInfo && a.volumeInfo.title) {
+          a = a.volumeInfo.title;
+        } else {
+          a = null;
+        }
 
+        if (b.volumeInfo && b.volumeInfo.title) {
+          b = b.volumeInfo.title;
+        } else {
+          b = null;
+        }
+      } else if (event.target.value === 'retailPrice') {
+        if (a.saleInfo && a.saleInfo.retailPrice && a.saleInfo.retailPrice.amount) {
+          a = a.saleInfo.retailPrice.amount;
+        } else {
+          a = null;
+        }
+
+        if (b.saleInfo && b.saleInfo.retailPrice && b.saleInfo.retailPrice.amount) {
+          b = b.saleInfo.retailPrice.amount;
+        } else {
+          b = null;
+        }
+      } else if (event.target.value === 'publishedDate') { // TODO: Handle longer string date comparisons
+        if (a.volumeInfo && a.volumeInfo.publishedDate) {
+          a = Number(a.volumeInfo.publishedDate);
+        } else {
+          a = null;
+        }
+
+        if (b.volumeInfo && b.volumeInfo.publishedDate) {
+          b = Number(b.volumeInfo.publishedDate);
+        } else {
+          b = null;
+        }
+        console.log('sorting by publish date', a, b);
+      }
+      
+      if (a === null){
+        return 1;
+      }
+      else if (b === null){
+        return -1;
+      }
+      else if (a === b){
+        return 0;
+      }
+      else if (this.state.sortOrder === 'ascending') {
+        return a < b ? -1 : 1;
+      }
+      else if (this.state.sortOrder === 'descending') {
+        return a < b ? 1 : -1;
+      }
+    };
+  }
 
   render() {
     const books = this.state.books.map((book, index) => {
@@ -57,7 +135,7 @@ class Bookshelf extends React.Component {
           {book.volumeInfo.subtitle && <div className="subtitle">'{book.volumeInfo.subtitle}'</div>}
           {book.saleInfo && book.saleInfo.retailPrice && 
             <div className="retailPrice">
-              Retail Price: {book.saleInfo.retailPrice.amount}
+              Retail Price: ${book.saleInfo.retailPrice.amount}
             </div>
           }
         </div>
@@ -68,12 +146,12 @@ class Bookshelf extends React.Component {
       <div className="body">
         <div className="header">
           <div className="title">Bookshelf</div>
-            <select defaultValue={this.state.sortOption}>
-              <option value={'title'}>Title</option>
-              <option value={'retailPrice'}>Price</option>
-              <option value={'publishedDate'}>Date of Publication</option>
+            <select className="select" defaultValue={this.state.sortOption} onChange={this.changeSortOption}>
+              <option value='title'>Title</option>
+              <option value='retailPrice'>Price</option>
+              <option value='publishedDate'>Date of Publication</option>
             </select>
-            <select defaultValue={this.state.sortOrder}>
+            <select className="select" defaultValue={this.state.sortOrder} onChange={this.changeSortOrder}>
               <option value={'ascending'}>Ascending</option>
               <option value={'descending'}>Descending</option>
             </select>

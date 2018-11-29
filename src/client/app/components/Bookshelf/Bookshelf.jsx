@@ -172,7 +172,7 @@ class Bookshelf extends React.Component {
   }
 
   render() {
-    if (!this.state.books.length > 0) {
+    if (!this.state.booksOrderedBySale.length > 0) {
       return (
         <div className="title">Fetching books...</div>
       ); 
